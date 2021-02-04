@@ -1,0 +1,10 @@
+*.a
+*.out
+*.swp
+*.vscode
+*.o
+*.json
+test.c
+file
+Minishell
+Notes
