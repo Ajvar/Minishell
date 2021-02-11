@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 20:27:15 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/02 17:02:28 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/11 20:20:31 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,127 +20,156 @@
 #include "libft/libft.h"
 #include "Minishell.h"
 
-char          **g_env;
-char          **g_path;
-extern char   ** environ;
+t_list			*g_env;
 
-int ft_process(char **commands)
+int				ft_parse(char *s)
 {
-  int i;
-
-  i = 0;
-  while (commands[i])
-  {
-
-    i++;
-  }
-  return (0);
+	
 }
 
-void ft_free_array(char **array)
+int				ft_process(int n, char **pipes)
 {
-  int i;
+	int			fd[2];
+	int			i;
+	pid_t		child;
+	char		**args;
 
-  i = 0;
-  while (array[i])
-  {
-    free(array[i]);
-    i++;
-  }
-  free(array);
-  array = NULL;
+	i = 0;
+	pipe(fd);
+	while (n > 0)
+	{
+		child = fork();
+		if (child == 0)
+		{
+			
+		}
+		else
+		{
+
+		}
+		n--;
+		i++;
+	}
 }
 
-char **ft_arr_cpy(char **src)
-{
-  int   i;
-  char  **dest;
+/*
+**	splits the commands at pipes
+**	and send the result to a function that will process the result
+**	(parse it and execute it)
+*/
 
-  i = 0;
-  while (src[i])
-    i++;
-  printf("Before malloc: %d\n", i);
-  dest = malloc(sizeof(char *) * (i + 1));
-  printf("After malloc: %d\n", i);
-  dest[i] = NULL;
-  i--;
-  while (i >= 0)
-  {
-    dest[i] = ft_strdup(src[i]);
-    i--;
-  }
-  printf("End of function: %d\n", i);
-  return (dest);
+int				ft_get_pipes(char **commands)
+{
+	int			i;
+	int			pipes_nbr;
+	char		**pipes;
+
+	i = -1;
+	pipes_nbr = 0;
+	while (commands[++i])
+	{
+		pipes = ft_split(commands[i], '|');
+		while (pipes[pipes_nbr])
+			pipes_nbr++;
+		if (ft_process(pipes_nbr, pipes) == -1)
+		{
+			ft_free_array(pipes);
+			return (-1);
+		}
+		ft_free_array(pipes);
+	}
+	return (0);
 }
 
-void  ft_set_path(void)
+void			ft_free_array(char **array)
 {
-  int i;
+	int			i;
 
-  i = 0;
-  if (g_path)
-    ft_free_array(g_path);
-  while (g_env[i])
-  {
-    if  ( ! ft_strncmp(g_env[i], "PATH=", 5))
-    {
-      g_path = ft_split(&g_env[i][5], ':');
-      break;
-    }
-    i++;
-  }
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+	array = NULL;
 }
 
-int main()
+char			**ft_arr_cpy(char **src)
 {
-  char  *buffer;
-  char  **commands;
-  int   n;
-  
-  g_env = ft_arr_cpy(environ);
-  g_path = NULL;
-  ft_set_path();
-  //int i = 0;
-  //while (g_path[i])
-  //{
-  //  printf("%s\n", g_path[i]);
-  //  i++;
-  //}
-  while (1)
-  {
-    ft_prompt();
-    n = get_next_line(0, &buffer);
-    commands = ft_split(buffer, ';');
-    free(buffer); 
-    ft_process(commands);
-  }
-  ft_free_array(g_env);
-  ft_free_array(g_path);
-  return 0;
+	int			i;
+	char		**dest;
+
+	i = 0;
+	while (src[i])
+		i++;
+	dest = malloc(sizeof(char *) * (i + 1));
+	dest[i] = NULL;
+	i--;
+	while (i >= 0)
+	{
+		dest[i] = ft_strdup(src[i]);
+		i--;
+	}
+	return (dest);
 }
 
-  //ft_free_array(splited_args);
+// char			**ft_path(void)
+// {
+// 	int			i;
+// 	char		*path;
 
+// 	i = 0;
+// 	while (g_env[i])
+// 	{
+// 		if (!(ft_strncmp(g_env[i], "PATH=", 5)))
+// 		{
+// 			path = ft_split(&g_env[i][5], ':');
+// 			break ;
+// 		}
+// 		i++;
+// 	}
+// 	return (path);
+// }
 
-  //while (true)
-  //{
-  //  printf("enter value");
-  //  child_pid = fork();
-//
-//
-//
-    //  n = scanf("%m[a-z]", &strin);
-    //  printf("%s", strin);
-//
-    //  free(strin);
-    //}
-    //// The child process
-    //if (child_pid == 0) {
-    //    printf("### Child ###\nCurrent PID: %d and Child PID: %d\n",
-    //           getpid(), child_pid);
-    //    sleep(1); // Sleep for one second
-    //} else {
-    //    wait_result = waitpid(child_pid, &stat_loc, WUNTRACED);
-    //    printf("### Parent ###\nCurrent PID: %d and Child PID: %d\n",
-    //           getpid(), child_pid);
-    //}
+void ft_env(void)
+{
+	extern char	**environ;
+	t_list		*env;
+	int i;
+
+	i = -1;
+	while (environ[++i])
+	{
+		env = ft_lstnew(environ[i]);
+		ft_lstadd_back(&g_env, env);
+	}
+	printf("DONE...\n");
+	env = g_env;
+	while (env)
+	{	
+		ft_putstr_fd(env->content, 1);
+		ft_putstr_fd("\n", 1);
+		env = env->next;
+	}
+}
+
+int				main(void)
+{
+	char		**commands;
+	char		*buffer;
+	int			n;
+
+	while (1)
+	{
+		g_env = ft_lstnew(NULL);
+		ft_env();
+		ft_prompt();
+		n = get_next_line(0, &buffer);
+		commands = ft_split(buffer, ';');
+		free(buffer);
+		ft_get_pipes(commands);
+	}
+	ft_free_array(g_env);
+	return (0);
+}

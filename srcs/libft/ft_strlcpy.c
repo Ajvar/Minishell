@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/08 14:30:38 by jcueille          #+#    #+#             */
-/*   Updated: 2019/10/31 10:46:35 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/11 14:57:44 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ size_t		ft_strlcpy(char *dst, const char *src, size_t dstsize)
 	size_t	res;
 	size_t	j;
 
-	res = ft_strlen(src);
+	res = ft_strlen((char*)src);
 	j = 0;
 	if (dstsize == 0)
 		return (res);

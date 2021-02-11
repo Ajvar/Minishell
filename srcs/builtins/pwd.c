@@ -1,30 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/08 17:47:20 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/11 14:59:41 by jcueille         ###   ########.fr       */
+/*   Created: 2021/02/10 20:40:50 by jcueille          #+#    #+#             */
+/*   Updated: 2021/02/10 21:02:48 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdio.h>
+#include <unistd.h>
 
-char		*ft_strdup(const char *s1)
+int			ft_pwd(void)
 {
-	char	*res;
-	int		i;
+	char	*cwd;
+	char	buff[4096];
 
-	i = 0;
-	if (!(res = malloc(ft_strlen(s1) + 1)))
-		return (NULL);
-	while (s1[i])
-	{
-		res[i] = s1[i];
-		i++;
-	}
-	res[i] = '\0';
-	return (res);
+	if (!(cwd = getcwd(buff, 4096)))
+		return(-1);
+	printf("%s", cwd);
 }

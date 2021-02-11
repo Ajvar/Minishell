@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 12:24:21 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/01 21:32:03 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/11 15:00:26 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void			*ft_memchr(const void *s, int c, size_t n);
 void			*ft_memset(void *s, int c, size_t n);
 void			*ft_calloc(size_t count, size_t size);
 void			ft_bzero(void *s, size_t n);
-size_t			ft_strlen(char *s);
+size_t			ft_strlen(const char *s);
 int				ft_toupper(int c);
 int				ft_tolower(int c);
 int				ft_isprint(int c);

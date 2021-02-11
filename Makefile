@@ -19,15 +19,11 @@ $(NAME): ${OBJS}  ${LIBFT_PATH}/libft.a
 all: ${NAME}
 
 ${LIBFT_PATH}/libft.a:
-	make -C ${LIBFT_PATH}
-
-#${FT_PRINTF_PATH}/libftprintf.a:
-#	make -C ${FT_PRINTF_PATH}
+	make bonus -C ${LIBFT_PATH}
 
 clean:
 	rm -rf ${OBJS}
 	make clean -C ${LIBFT_PATH}
-	#make clean -C ${FT_PRINTF_PATH}
 
 fclean: clean
 	rm -rf ${NAME}

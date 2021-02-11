@@ -6,13 +6,13 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/07 18:33:21 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/01 21:31:20 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/11 14:59:57 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 
-size_t	ft_strlen(char *s)
+size_t	ft_strlen(const char *s)
 {
 	int i;
 
