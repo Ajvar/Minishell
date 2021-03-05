@@ -1,19 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Minishell.h                                        :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/01 20:28:25 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/12 14:30:54 by jcueille         ###   ########.fr       */
+/*   Created: 2021/02/12 13:57:43 by jcueille          #+#    #+#             */
+/*   Updated: 2021/02/12 14:33:13 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "../libft/libft.h"
+#include "../Minishell.h"
 
-t_list			*g_env;
-void    ft_prompt();
+ft_env()
+{
+	t_list		*env;
 
-#endif
+	env = g_env;
+	while (env)
+	{	
+		ft_putstr_fd(env->content, 1);
+		ft_putstr_fd("\n", 1);
+		env = env->next;
+	}
+}

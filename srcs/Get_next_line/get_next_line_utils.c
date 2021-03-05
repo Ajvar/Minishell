@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/01 11:59:53 by jcueille          #+#    #+#             */
-/*   Updated: 2019/11/27 15:40:18 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/16 17:20:04 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ char		*ft_substr(char const *s, unsigned int start, size_t len)
 	return (res);
 }
 
-char		*ft_strjoin(char const *s1, char const *s2)
+char		*ft_strjoin(char  *s1, char  *s2)
+
 {
 	int		i;
 	char	*res;

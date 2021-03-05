@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 20:27:15 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/11 20:20:31 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/12 14:30:21 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 #include <strings.h>
 #include "libft/libft.h"
 #include "Minishell.h"
-
-t_list			*g_env;
 
 int				ft_parse(char *s)
 {
@@ -36,20 +34,7 @@ int				ft_process(int n, char **pipes)
 
 	i = 0;
 	pipe(fd);
-	while (n > 0)
-	{
-		child = fork();
-		if (child == 0)
-		{
-			
-		}
-		else
-		{
 
-		}
-		n--;
-		i++;
-	}
 }
 
 /*
@@ -148,8 +133,9 @@ void ft_env(void)
 	env = g_env;
 	while (env)
 	{	
-		ft_putstr_fd(env->content, 1);
-		ft_putstr_fd("\n", 1);
+		//ft_putstr_fd(env->content, 1);
+		//ft_putstr_fd("\n", 1);
+		printf("%s\n", env->content);
 		env = env->next;
 	}
 }

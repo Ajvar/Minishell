@@ -6,13 +6,14 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/09 11:12:31 by jcueille          #+#    #+#             */
-/*   Updated: 2019/10/22 16:59:28 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/16 17:20:04 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		*ft_strjoin(char const *s1, char const *s2)
+char		*ft_strjoin(char  *s1, char  *s2)
+
 {
 	int		i;
 	char	*res;

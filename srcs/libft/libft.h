@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 12:24:21 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/11 15:00:26 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/02/25 14:37:43 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 typedef struct	s_list
 {
-	void			*content;
+	char			*content;
 	struct s_list	*next;
 }				t_list;
 int				ft_memcmp(const void *s1, const void *s2, size_t n);
