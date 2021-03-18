@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/12 17:12:48 by jcueille          #+#    #+#             */
-/*   Updated: 2021/03/16 16:27:51 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/03/18 22:19:48 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,49 +195,49 @@ static char	*ft_search_var(char *s, int *inc, int flag, int *i)
 **	DOLLAR DANS QUOTES
 */
 
-static char	*ft_dollar(char *s, int *i, int *j)
-{
-	char	*tmp;
-	char	*res;
-	int		inc;
+// static char	*ft_dollar(char *s, int *i, int *j)
+// {
+// 	char	*tmp;
+// 	char	*res;
+// 	int		inc;
 
-	if (!(s[*j + 1]))
-	{
-		s[*j] = '\0';
-		(*j)--;
-		return (s);
-	}
-	if (s[*j + 1] == '\"')
-	{
-		ft_remove_char(s, *j);
-		(*j)--;
-		return (s);
-	}
-	res = ft_search_var(s, &inc, 1, j);
-	s[*j] = '\0';
-	if (inc > 0)
-		*j = inc - 1;
-	if (*j > 0 && s[*j - 1])
-	{
-		tmp = ft_strjoin(s, res);
-		free(s);
-		free(res);
-		return (tmp);
-	}
-	free(s);
-	return (res);
-}
+// 	if (!(s[*j + 1]))
+// 	{
+// 		s[*j] = '\0';
+// 		(*j)--;
+// 		return (s);
+// 	}
+// 	if (s[*j + 1] == '\"')
+// 	{
+// 		ft_remove_char(s, *j);
+// 		(*j)--;
+// 		return (s);
+// 	}
+// 	res = ft_search_var(s, &inc, 1, j);
+// 	s[*j] = '\0';
+// 	if (inc > 0)
+// 		*j = inc - 1;
+// 	if (*j > 0 && s[*j - 1])
+// 	{
+// 		tmp = ft_strjoin(s, res);
+// 		free(s);
+// 		free(res);
+// 		return (tmp);
+// 	}
+// 	free(s);
+// 	return (res);
+// }
 
-static int	ft_quoted_esc(char *s, int *j, int *k)
-{
-	if (s[*j + 1] == '\\' || s[*j + 1] == '\"' || s[*j + 1] == '$')
-	{
-		ft_remove_char(s, *j);
-		(*j)++;
-		(*k)++;
-	}
+// static int	ft_quoted_esc(char *s, int *j, int *k)
+// {
+// 	if (s[*j + 1] == '\\' || s[*j + 1] == '\"' || s[*j + 1] == '$')
+// 	{
+// 		ft_remove_char(s, *j);
+// 		(*j)++;
+// 		(*k)++;
+// 	}
 
-}
+// }
 
 /*
 **	DOUBLE QUOTES
@@ -276,18 +276,114 @@ static int	ft_quoted_esc(char *s, int *j, int *k)
 // 	return (s_copy);
 // }
 
-char 	*ft_double(char *s, int *i)
+void	ft_listclear(t_list **lst)
+{
+	t_list *nxt;
+	t_list *tmp;
+
+	tmp = *lst;
+	while (tmp)
+	{
+		nxt = (tmp)->next;
+		free(tmp->content);
+		tmp->content = NULL;
+		free(tmp);
+		tmp = nxt;
+	}
+	*lst = NULL;
+}
+
+void	ft_quoted_str(char *s, int *i, t_list **list, int *len)
 {
 	int		j;
-	t_list	list;
+	char	*res;
+	t_list	*tmp;
+
+	j = *i;
+	while (s[j] && s[j] != '\"' && s[j] != '\\' && s[j] != '$')
+		j++;
+
+	res = ft_substr(s, *i, j - *i);
+	tmp = ft_lstnew(res);
+	ft_lstadd_back(list, tmp);
+	*i = j;
+	(*len) += ft_strlen(res);
+}
+
+void ft_dollar(char *s, int *i, t_list **list, int *len)
+{
+	char	*res;
+	int		inc;
+	t_list	*tmp;
+
+	if (!(res = ft_search_var(s, &inc, 0, i)))
+		return ;
+	tmp = ft_lstnew(res);
+	ft_lstadd_back(list, tmp);
+	(*i) += inc;
+	(*len) += ft_strlen(res);
+}
+
+static int	ft_quoted_esc(char *s, int *i, t_list **list, int *len)
+{
+	char	*res;
+	t_list	*tmp;
 
 	(*i)++;
-	j = *i;
-	while (s_copy[j] && s_copy[j] != '\"')
-	{
+	if (s[*i])
+		res = ft_substr(s, *i, 1);
+	tmp = ft_lstnew(res);
+	ft_lstadd_back(list, tmp);
+	(*len) += ft_strlen(res);
+}
 
-		j++;
+char	*ft_concat(t_list *list, int len)
+{
+	t_list	*tmp;
+	char	*res;
+	int		i;
+	int		j;
+
+	i = 0;
+	res = malloc(len + 1);
+	tmp = list;
+	while (tmp)
+	{
+		j = 0;
+		while (tmp->content[j])
+		{
+			res[i] = tmp->content[j];
+			i++;
+			j++;
+		}
+		tmp = tmp->next;
 	}
+	ft_listclear(&list);
+	return (res);
+}
+
+char 	*ft_double(char *s, int *i)
+{
+	t_list	*list;
+	char	*res;
+	int		len;
+ 
+	list = NULL;
+	res = NULL;
+	(*i)++;
+	while (s[*i] && s[*i] != '\"')
+	{
+		if (s[*i] == '$')
+			ft_dollar(s, i, &list, &len);
+		else if (s[*i] == '\\')
+			ft_quoted_esc(s, i, &list, &len);
+		else
+			ft_quoted_str(s, i, &list, &len);
+		(*i)++;	
+	}
+	if (list)
+		res = ft_concat(list, len);
+	return (res);
 }
 
 /*
@@ -383,7 +479,7 @@ int	main(void)
 /*	
 **	s = ft_strdup("\"${VAR}\" \"\'lol\'\" ${VR} mdr");
 */
-	s = ft_strdup("\" 1$  ${VAR}\" $ $VAR \"test 3 $\"");
+	s = ft_strdup("\"prout porout $\"$ $VAR \"test 3 $\"");
 	ft_parse(s);
 	printf("%s\n", s);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 12:24:21 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/25 14:37:43 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/03/18 21:55:47 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ size_t			ft_strlcpy(char *dst, const char *src, size_t dstsize);
 char			*ft_strtrim(char const *s1, char const *set);
 char			*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char			*ft_substr(char const *s, unsigned int start, size_t len);
-char			*ft_strjoin(char const *s1, char const *s2);
+char			*ft_strjoin(char *s1, char *s2);
 char			**ft_split(char const *s, char c);
 void			ft_putendl_fd(char *s, int fd);
 void			ft_putchar_fd(char c, int fd);
@@ -65,4 +65,5 @@ void			ft_lstclear(t_list **lst, void (*del)(void*));
 void			ft_lstiter(t_list *lst, void (*f)(void *));
 t_list			*ft_lstmap(t_list *lst, void *(*f)(void *)
 , void (*del)(void *));
+void			ft_lstdel(char *s);
 #endif
