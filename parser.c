@@ -13,15 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "./srcs/libft/libft.h"
+#include "./srcs/Minishell.h"
 
-typedef struct		s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}					t_env;
 
-t_env *g_env;
 
 void	ft_new_env(void)
 {
@@ -34,6 +28,7 @@ void	ft_new_env(void)
 	g_env->next = tmp;
 	tmp->key = ft_strdup("VARZ");
 	tmp->value = ft_strdup("VALUZ");
+	tmp->next = NULL;
 }
 
 /*
@@ -76,28 +71,6 @@ static int	ft_bracket_check(char *s, int i)
 	}
 	printf("ERROR: BRACKET MISSING\n");
 	return (0);
-}
-
-static void	ft_error(void)
-{
-	printf("error\n");
-	exit(1);
-}
-
-static void	ft_expand(char *s, int i)
-{
-	char	*res;
-
-	res = NULL;
-	if (s[i + 1] == '{' || ft_isalpha(s[i + 1]))
-	{
-		ft_remove_char(s, i);
-		if (s[i] == '{')
-		{
-			if (!(ft_bracket_check(s, i)))
-				ft_error();
-		}
-	}
 }
 
 /*
@@ -165,6 +138,8 @@ static char	*ft_search_var(char *s, int *inc, int flag, int *i)
 	j = k;
 	while (s[j] && s[j] != ' ' && s[j] != '}')
 		j++;
+	if (j - k == 0)
+		return (NULL);
 	name = ft_substr(s, k, j - k);
 	while (tmp)
 	{
@@ -306,7 +281,7 @@ void	ft_quoted_str(char *s, int *i, t_list **list, int *len)
 	res = ft_substr(s, *i, j - *i);
 	tmp = ft_lstnew(res);
 	ft_lstadd_back(list, tmp);
-	*i = j;
+	*i = j - 1;
 	(*len) += ft_strlen(res);
 }
 
@@ -324,14 +299,15 @@ void ft_dollar(char *s, int *i, t_list **list, int *len)
 	(*len) += ft_strlen(res);
 }
 
-static int	ft_quoted_esc(char *s, int *i, t_list **list, int *len)
+static void	ft_quoted_esc(char *s, int *i, t_list **list, int *len)
 {
 	char	*res;
 	t_list	*tmp;
 
 	(*i)++;
-	if (s[*i])
-		res = ft_substr(s, *i, 1);
+	if (!(s[*i]))
+		return ;
+	res = ft_substr(s, *i, 1);
 	tmp = ft_lstnew(res);
 	ft_lstadd_back(list, tmp);
 	(*len) += ft_strlen(res);
@@ -345,7 +321,8 @@ char	*ft_concat(t_list *list, int len)
 	int		j;
 
 	i = 0;
-	res = malloc(len + 1);
+	res = ft_calloc(len + 1, sizeof(char));
+	//res[len + 1] = '\0';
 	tmp = list;
 	while (tmp)
 	{
@@ -367,7 +344,8 @@ char 	*ft_double(char *s, int *i)
 	t_list	*list;
 	char	*res;
 	int		len;
- 
+
+	len = 0;
 	list = NULL;
 	res = NULL;
 	(*i)++;
@@ -406,6 +384,27 @@ char		*ft_apply(char *s, int *i, char *(*f)(char *s, int *i), char *res)
 	return (tmp_bis);
 }
 
+char	*ft_apply_var(char *s, int *i, char *res)
+{
+	char	*tmp;
+	char	*tmp_bis;
+	int		inc;
+
+	tmp_bis = NULL;
+	tmp_bis = ft_search_var(s, &inc, 0, i);
+	(*i) += inc;
+	if (!(tmp_bis))
+		return (res);
+	if (res)
+		tmp = ft_strjoin(res, tmp_bis);
+	else
+	{
+		free(res);
+		return (tmp_bis);
+	}
+	free(res);
+	return (tmp);
+}
 
 //ADDS STR TO COMMANDS LIST WHEN SPLITTING SPACE IS REACHED
 
@@ -426,7 +425,6 @@ t_list		*ft_parse(char *s)
 	t_list	*command;
 	char	*res;
 	int		i;
-	int		inc;
 
 	i = -1;
 	res = NULL;
@@ -434,27 +432,17 @@ t_list		*ft_parse(char *s)
 	while (s[++i])
 	{
 		if (s[i] == '\"')
-		{
 			res = ft_apply(s, &i, &ft_double, res);
-			continue;
-		}
 		else if (s[i] == ' ')
 		{
 			ft_empty_buffer(res, &command);
 			free(res);
 			res = NULL;
-			continue ;
 		}
-		if (s[i] == '\'')
-		{
+		else if (s[i] == '\'')
 			res = ft_apply(s, &i, &ft_single, res);
-			continue;
-		}
 		else if (s[i] == '$')
-		{
-			res = ft_search_var(s, &inc, 0, &i);
-			i += inc;
-		}
+			res = ft_apply_var(s, &i, res);
 		else
 			res = ft_apply(s, &i, &ft_string, res);
 	}
@@ -465,22 +453,22 @@ t_list		*ft_parse(char *s)
 		printf("S IS %s\n", command->content);
 		command = command->next;
 	}
+	return (command);
 }
 
 int	main(void)
 {
-	int n = 0;
-	int k = 5;
-	int *j = &k;
-	int *i = &n;
 	char *s;
 
 	ft_new_env();
 /*	
 **	s = ft_strdup("\"${VAR}\" \"\'lol\'\" ${VR} mdr");
 */
-	s = ft_strdup("\"prout porout $\"$ $VAR \"test 3 $\"");
+	s = ft_strdup("\"\'prout porout \\\\ $\'\"$ $VAR tamere la pute \"test 3 $\" \'\"lol\\n\"\'");
 	ft_parse(s);
 	printf("%s\n", s);
+	free(s);
+	ft_env();
+	ft_pwd();
 	return (0);
 }

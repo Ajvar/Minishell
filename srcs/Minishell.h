@@ -13,7 +13,17 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-t_list			*g_env;
+typedef struct		s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}					t_env;
+
+t_env *g_env;
+
+int		ft_pwd(void);
 void    ft_prompt();
+void    ft_env();
 
 #endif
