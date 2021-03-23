@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/12 17:12:48 by jcueille          #+#    #+#             */
-/*   Updated: 2021/03/23 15:22:50 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/03/23 21:03:55 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,48 +108,91 @@ static char	*ft_single(char *s, int *i)
 	return (res);
 }
 
-void				ft_space_skip(char *s, int *i)
+// void				ft_space_skip(char *s, int *i)
+// {
+// 	while (s[*i] == ' ')
+// 		(*i)++;
+// }
+
+// void ft_add_chain(t_list **buff, int *i, char *s, int *len)
+// {
+// 	int	j;
+// 	t_list	*tmp;
+// 	char	*m;
+
+// 	j = *i;
+// 	while (s[*i] && s[*i] != ' ')
+// 		(*i)++;
+// 	m = ft_substr(s, j, *i - j);
+// 	tmp = ft_lstnew(m);
+// 	ft_lstadd_back(&buff, tmp);
+// 	(*len) += ft_strlen(m);
+// 	free(m);
+// }
+
+// void	ft_remove_spaces(char **s)
+// {
+// 	t_list	*buff;
+// 	t_list	*tmp;
+// 	char	*res;
+// 	int		len;
+// 	int		i;
+
+// 	buff = NULL;
+// 	res = NULL;
+// 	i = -1;
+// 	while (*s[++i])
+// 	{
+// 		if (*s[i] == ' ')
+// 			ft_space_skip(*s, &i);
+// 		if (*s[i])
+// 			ft_add_chain(&buff, &i, *s, &len);
+// 	}
+// 	res = ft_concat(buff, len);
+// 	free(*s);
+// 	*s = res;
+// }
+
+char	*ft_add_space(char	**ss, int i, char *tmp)
 {
-	while (s[*i] == ' ')
-		(*i)++;
+	char	*spaced;
+	char	*joined;
+
+	spaced = NULL;
+	if(!(spaced = ft_strjoin(*ss[i], " ")))
+		return (NULL);
+	if (tmp)
+	{
+		joined = ft_strjoin(tmp, spaced);
+		free(tmp);
+		return (joined);
+	}
+
 }
 
-void ft_add_chain(t_list **buff, int *i, char *s, int *len)
+void ft_remove_spaces(char *s)
 {
-	int	j;
-	t_list	*tmp;
-	char	*m;
-
-	j = i;
-	while (s[i] && s[*i] != ' ')
-		(*i)++;
-	m = ft_substr(s, j, *i - j);
-	tmp = ft_lstnew(m);
-	ft_lstadd_back(&buff, tmp);
-	(*len) += ft_strlen(m);
-	free(m);
-}
-
-char	*ft_remove_spaces(char *s)
-{
-	t_list	*buff;
-	t_list	*tmp;
+	char	**ss;
+	char	*tmp;
 	char	*res;
-	int		len;
 	int		i;
 
-	buff = NULL;
-	res = NULL;
 	i = -1;
-	while (s[++i])
+	res = 0;
+	ss = ft_split(s, ' ');
+	while (ss[++i])
 	{
-		if (s[i] == ' ')
-			ft_space_skip(s, &i);
-		if (s[i])
-			ft_add_chain(&buff, &i, s, &len);
+		if(!(tmp) && !(ss[i + 1]))
+			tmp = ft_strdup(ss[i]);
+		if (ss[i + 1])
+			tmp = ft_add_space(ss, i, tmp);
+		else
+			res = ft_strjoin(tmp, ss[i]);
+		free(ss[i]);
 	}
-	res = ft_concat(buff, len);
-	return (res);
+	free(tmp);
+	free(ss);
+	
 }
 
 /*
