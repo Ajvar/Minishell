@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/12 17:12:48 by jcueille          #+#    #+#             */
-/*   Updated: 2021/03/18 22:19:48 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/03/23 15:22:50 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #include <stdlib.h>
 #include "./srcs/libft/libft.h"
 #include "./srcs/Minishell.h"
-
-
 
 void	ft_new_env(void)
 {
@@ -88,7 +86,7 @@ static char	*ft_string(char *s, int *i)
 		if (s[j] == '\\')
 		{
 			ft_remove_char(s, j);
-			j++;
+			j--;
 		}
 		j++;
 	}
@@ -107,6 +105,50 @@ static char	*ft_single(char *s, int *i)
 		j++;
 	res = ft_substr(s, (*i) + 1, j - (*i + 1));
 	(*i) = j;
+	return (res);
+}
+
+void				ft_space_skip(char *s, int *i)
+{
+	while (s[*i] == ' ')
+		(*i)++;
+}
+
+void ft_add_chain(t_list **buff, int *i, char *s, int *len)
+{
+	int	j;
+	t_list	*tmp;
+	char	*m;
+
+	j = i;
+	while (s[i] && s[*i] != ' ')
+		(*i)++;
+	m = ft_substr(s, j, *i - j);
+	tmp = ft_lstnew(m);
+	ft_lstadd_back(&buff, tmp);
+	(*len) += ft_strlen(m);
+	free(m);
+}
+
+char	*ft_remove_spaces(char *s)
+{
+	t_list	*buff;
+	t_list	*tmp;
+	char	*res;
+	int		len;
+	int		i;
+
+	buff = NULL;
+	res = NULL;
+	i = -1;
+	while (s[++i])
+	{
+		if (s[i] == ' ')
+			ft_space_skip(s, &i);
+		if (s[i])
+			ft_add_chain(&buff, &i, s, &len);
+	}
+	res = ft_concat(buff, len);
 	return (res);
 }
 
@@ -145,10 +187,6 @@ static char	*ft_search_var(char *s, int *inc, int flag, int *i)
 	{
 		if (ft_strncmp(tmp->key, name, ft_strlen(tmp->key)) == 0)
 			res = ft_strdup(tmp->value);
-		/*int l = ft_strncmp(tmp->key, name, ft_strlen(tmp->key));
-		**	if (l == 0)
-		**	res = ft_strdup(tmp->value);
-		*/
 		tmp = tmp->next;
 	}
 	*inc += ft_strlen(name);
@@ -166,109 +204,27 @@ static char	*ft_search_var(char *s, int *inc, int flag, int *i)
 	return (name);
 }
 
-/*
-**	DOLLAR DANS QUOTES
-*/
-
-// static char	*ft_dollar(char *s, int *i, int *j)
-// {
-// 	char	*tmp;
-// 	char	*res;
-// 	int		inc;
-
-// 	if (!(s[*j + 1]))
-// 	{
-// 		s[*j] = '\0';
-// 		(*j)--;
-// 		return (s);
-// 	}
-// 	if (s[*j + 1] == '\"')
-// 	{
-// 		ft_remove_char(s, *j);
-// 		(*j)--;
-// 		return (s);
-// 	}
-// 	res = ft_search_var(s, &inc, 1, j);
-// 	s[*j] = '\0';
-// 	if (inc > 0)
-// 		*j = inc - 1;
-// 	if (*j > 0 && s[*j - 1])
-// 	{
-// 		tmp = ft_strjoin(s, res);
-// 		free(s);
-// 		free(res);
-// 		return (tmp);
-// 	}
-// 	free(s);
-// 	return (res);
-// }
-
-// static int	ft_quoted_esc(char *s, int *j, int *k)
-// {
-// 	if (s[*j + 1] == '\\' || s[*j + 1] == '\"' || s[*j + 1] == '$')
-// 	{
-// 		ft_remove_char(s, *j);
-// 		(*j)++;
-// 		(*k)++;
-// 	}
-
-// }
-
-/*
-**	DOUBLE QUOTES
-*/
-
-// static char	*ft_double(char *s, int *i)
-// {
-// 	int		j;
-// 	int		k;
-// 	int		vars;
-// 	char	*s_copy;
-// 	char	*res;
-
-// 	j = *i + 1;
-// 	k = 0;
-// 	vars = 0;
-// 	if (!(s[j]))
-// 		return (NULL);
-// 	s_copy = ft_strdup(&s[j]);
-// 	j = 0;
-// 	while (s_copy[j] && s_copy[j] != '\"')
-// 	{
-// 		if (s_copy[j] == '\\')
-// 			ft_quoted_esc(s, &j, &k);
-// 		if (s_copy[j] ==  '$')
-// 		{	
-// 			s_copy = ft_dollar(s_copy, i, &j);
-// 			vars++;
-// 		}
-// 		j++;
-// 	}
-// 	if (s_copy[j] == '\0')
-// 		printf("ERROR: DOUBLE QUOTE NOT CLSOED\n");
-// 	s_copy[j] = '\0';
-// 	(*i) += j + 2 + vars;
-// 	return (s_copy);
-// }
-
 void	ft_listclear(t_list **lst)
 {
 	t_list *nxt;
 	t_list *tmp;
 
-	tmp = *lst;
-	while (tmp)
+	if (*lst)
 	{
-		nxt = (tmp)->next;
-		free(tmp->content);
-		tmp->content = NULL;
-		free(tmp);
-		tmp = nxt;
+		tmp = *lst;
+		while (tmp)
+		{
+			nxt = (tmp)->next;
+			free(tmp->content);
+			tmp->content = NULL;
+			free(tmp);
+			tmp = nxt;
+		}
+		*lst = NULL;
 	}
-	*lst = NULL;
 }
 
-void	ft_quoted_str(char *s, int *i, t_list **list, int *len)
+int	ft_quoted_str(char *s, int *i, t_list **list, int *len)
 {
 	int		j;
 	char	*res;
@@ -277,40 +233,53 @@ void	ft_quoted_str(char *s, int *i, t_list **list, int *len)
 	j = *i;
 	while (s[j] && s[j] != '\"' && s[j] != '\\' && s[j] != '$')
 		j++;
-
-	res = ft_substr(s, *i, j - *i);
-	tmp = ft_lstnew(res);
+	if (!(res = ft_substr(s, *i, j - *i)))
+		return (-1);
+	if (!(tmp = ft_lstnew(res)))
+	{
+		free(res);
+		return (-2);
+	}
 	ft_lstadd_back(list, tmp);
 	*i = j - 1;
 	(*len) += ft_strlen(res);
+	return (0);
 }
 
-void ft_dollar(char *s, int *i, t_list **list, int *len)
+int			ft_dollar(char *s, int *i, t_list **list, int *len)
 {
 	char	*res;
 	int		inc;
 	t_list	*tmp;
 
 	if (!(res = ft_search_var(s, &inc, 0, i)))
-		return ;
-	tmp = ft_lstnew(res);
+		return (0);
+	if (!(tmp = ft_lstnew(res)))
+		return (-1);
 	ft_lstadd_back(list, tmp);
 	(*i) += inc;
 	(*len) += ft_strlen(res);
+	return (0);
 }
 
-static void	ft_quoted_esc(char *s, int *i, t_list **list, int *len)
+static int	ft_quoted_esc(char *s, int *i, t_list **list, int *len)
 {
 	char	*res;
 	t_list	*tmp;
 
 	(*i)++;
 	if (!(s[*i]))
-		return ;
-	res = ft_substr(s, *i, 1);
-	tmp = ft_lstnew(res);
+		return (0);
+	if (!(res = ft_substr(s, *i, 1)))
+		return (-1);
+	if (!(tmp = ft_lstnew(res)))
+	{
+		free(res);
+		return (-2);
+	}
 	ft_lstadd_back(list, tmp);
 	(*len) += ft_strlen(res);
+	return (0);
 }
 
 char	*ft_concat(t_list *list, int len)
@@ -321,8 +290,11 @@ char	*ft_concat(t_list *list, int len)
 	int		j;
 
 	i = 0;
-	res = ft_calloc(len + 1, sizeof(char));
-	//res[len + 1] = '\0';
+	if (!(res = ft_calloc(len + 1, sizeof(char))))
+	{
+		ft_listclear(&list);
+		return (NULL);
+	}
 	tmp = list;
 	while (tmp)
 	{
@@ -339,7 +311,7 @@ char	*ft_concat(t_list *list, int len)
 	return (res);
 }
 
-char 	*ft_double(char *s, int *i)
+char	*ft_double(char *s, int *i, int *r)
 {
 	t_list	*list;
 	char	*res;
@@ -352,12 +324,22 @@ char 	*ft_double(char *s, int *i)
 	while (s[*i] && s[*i] != '\"')
 	{
 		if (s[*i] == '$')
-			ft_dollar(s, i, &list, &len);
+			(*r) = ft_dollar(s, i, &list, &len);
 		else if (s[*i] == '\\')
-			ft_quoted_esc(s, i, &list, &len);
+			(*r) = ft_quoted_esc(s, i, &list, &len);
 		else
-			ft_quoted_str(s, i, &list, &len);
-		(*i)++;	
+			(*r) = ft_quoted_str(s, i, &list, &len);
+		if (*r)
+		{
+			ft_listclear(&list);
+			return (NULL);
+		}
+		(*i)++;
+	}
+	if (s[*i] != '\"')
+	{
+		(*r) = -3;
+		ft_listclear(&list);
 	}
 	if (list)
 		res = ft_concat(list, len);
@@ -373,15 +355,37 @@ char		*ft_apply(char *s, int *i, char *(*f)(char *s, int *i), char *res)
 	char	*tmp;
 	char	*tmp_bis;
 
+	tmp_bis = NULL;
 	tmp = (*f)(s, i);
-	if (!(res))
+	if (!(res) && tmp)
 		tmp_bis = ft_strdup(tmp);
-	else
+	else if (res && tmp)
 		tmp_bis = ft_strjoin(res, tmp);
 	free(res);
 	res = NULL;
 	free(tmp);
 	return (tmp_bis);
+}
+
+int		ft_apply_double(char *s, int *i, char *(*f)(char *s, int *i, int *r),
+						char **res)
+{
+	char	*tmp;
+	char	*tmp_bis;
+	int		r;
+
+	r = 0;
+	tmp_bis = NULL;
+	tmp = (*f)(s, i, &r);
+	if (!(*res) && tmp)
+		tmp_bis = ft_strdup(tmp);
+	else if (*res && tmp)
+		tmp_bis = ft_strjoin(*res, tmp);
+	free(*res);
+	*res = NULL;
+	free(tmp);
+	*res = tmp_bis;
+	return (r);
 }
 
 char	*ft_apply_var(char *s, int *i, char *res)
@@ -406,8 +410,9 @@ char	*ft_apply_var(char *s, int *i, char *res)
 	return (tmp);
 }
 
-//ADDS STR TO COMMANDS LIST WHEN SPLITTING SPACE IS REACHED
-
+/*
+**	ADDS STR TO COMMANDS LIST WHEN SPLITTING SPACE IS REACHED
+*/
 void		ft_empty_buffer(char *s, t_list **command)
 {
 	t_list	*tmp;
@@ -420,55 +425,112 @@ void		ft_empty_buffer(char *s, t_list **command)
 	ft_lstadd_back(command, tmp);
 }
 
+void	ft_parse_error(t_list *command)
+{
+	if (command)
+	{
+		ft_listclear(&command);
+		printf("There's been a malloc error.\n");
+	}
+}
+
+void	ft_double_error(int r, t_list *command, char *res)
+{
+	if (res)
+		free(res);
+	ft_listclear(&command);
+	if (r == -3)
+		printf("DOUBLE QUOTES NOT CLOSED\n");
+	else
+		printf("There's been a malloc error.\n");
+}
+
 t_list		*ft_parse(char *s)
 {
 	t_list	*command;
 	char	*res;
 	int		i;
+	int		r;
 
+	r = 0;
 	i = -1;
 	res = NULL;
 	command = NULL;
 	while (s[++i])
 	{
-		if (s[i] == '\"')
-			res = ft_apply(s, &i, &ft_double, res);
+		if (s[i] != ' ')
+		{
+			if (s[i] == '\"')
+			{
+				if (r = ft_apply_double(s, &i, &ft_double, &res))
+				{
+					ft_double_error(r, command, res);
+					return (NULL);
+				}
+			}
+			else if (s[i] == '\'')
+				res = ft_apply(s, &i, &ft_single, res);
+			else if (s[i] == '$')
+				res = ft_apply_var(s, &i, res);
+			else
+				res = ft_apply(s, &i, &ft_string, res);
+			if (!(res))
+			{
+				ft_parse_error(command);
+				return (NULL);
+			}
+		}
 		else if (s[i] == ' ')
 		{
 			ft_empty_buffer(res, &command);
 			free(res);
 			res = NULL;
 		}
-		else if (s[i] == '\'')
-			res = ft_apply(s, &i, &ft_single, res);
-		else if (s[i] == '$')
-			res = ft_apply_var(s, &i, res);
-		else
-			res = ft_apply(s, &i, &ft_string, res);
 	}
 	if (res)
-		ft_empty_buffer(res, &command);
-	while (command)
 	{
-		printf("S IS %s\n", command->content);
-		command = command->next;
+		ft_empty_buffer(res, &command);
+		free(res);
+		res = NULL;
 	}
 	return (command);
+}
+
+void	ft_free_env(void)
+{
+	t_env	*tmp;
+
+	while (g_env)
+	{
+		tmp = g_env->next;
+		free(g_env->key);
+		free(g_env->value);
+		free(g_env);
+		g_env = tmp;
+	}
 }
 
 int	main(void)
 {
 	char *s;
+	t_list	*command;
+	t_list	*tmp;
 
 	ft_new_env();
-/*	
-**	s = ft_strdup("\"${VAR}\" \"\'lol\'\" ${VR} mdr");
-*/
-	s = ft_strdup("\"\'prout porout \\\\ $\'\"$ $VAR tamere la pute \"test 3 $\" \'\"lol\\n\"\'");
-	ft_parse(s);
+	s = ft_strdup("\"export lol\"lol=value");
+	command = ft_parse(s);
+	tmp = command;
+	while (tmp)
+	{
+		printf("S IS %s\n", tmp->content);
+		tmp = tmp->next;
+	}
 	printf("%s\n", s);
+	
 	free(s);
-	ft_env();
-	ft_pwd();
+	ft_listclear(&command);
+	ft_free_env();
+	//ft_env();
+	//ft_pwd();
 	return (0);
 }
