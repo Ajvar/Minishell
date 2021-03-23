@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 12:24:21 by jcueille          #+#    #+#             */
-/*   Updated: 2021/03/18 21:55:47 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/03/23 22:01:08 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int				ft_isalpha(int c);
 int				ft_isalnum(int c);
 int				ft_atoi(const char *str);
 char			*ft_itoa(int n);
+int				ft_strcmp(const char *s1, const char *s2);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
 char			*ft_strnstr(const char	*big, const char *little, size_t len);
 char			*ft_strchr(const char *s, int c);
