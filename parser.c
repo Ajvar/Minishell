@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/12 17:12:48 by jcueille          #+#    #+#             */
-/*   Updated: 2021/03/23 22:05:01 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/03/24 16:53:06 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	ft_new_env(void)
 	tmp = malloc(sizeof(t_env));
 	g_env->next = tmp;
 	tmp->key = ft_strdup("VARZ");
-	tmp->value = ft_strdup("VALUZ");
+	tmp->value = ft_strdup("VA     LUW");
 	tmp->next = NULL;
 }
 
@@ -235,7 +235,6 @@ static char	*ft_search_var(char *s, int *inc, int *i)
 	name = ft_substr(s, k, j - k);
 	while (tmp)
 	{
-		
 		if (!(ft_strcmp(name, tmp->key)))
 			res = ft_strdup(tmp->value);
 		tmp = tmp->next;
@@ -515,7 +514,7 @@ t_list		*ft_parse(char *s)
 		{
 			if (s[i] == '\"')
 			{
-				if (r = ft_apply_double(s, &i, &ft_double, &res))
+				if ((r = ft_apply_double(s, &i, &ft_double, &res)))
 				{
 					ft_double_error(r, command, res);
 					return (NULL);
@@ -563,14 +562,14 @@ void	ft_free_env(void)
 	}
 }
 
-int	main(void)
+int			main(void)
 {
-	char *s;
+	char	*s;
 	t_list	*command;
 	t_list	*tmp;
 
 	ft_new_env();
-	s = ft_strdup("$ALOK");
+	s = ft_strdup("export var=lol");
 	command = ft_parse(s);
 	tmp = command;
 	while (tmp)
@@ -579,12 +578,9 @@ int	main(void)
 		tmp = tmp->next;
 	}
 	printf("%s\n", s);
-	
 	free(s);
+	ft_export(command);
 	ft_listclear(&command);
-	ft_env();
 	ft_free_env();
-
-	//ft_pwd();
 	return (0);
 }

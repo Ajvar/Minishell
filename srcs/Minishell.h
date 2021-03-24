@@ -6,7 +6,7 @@
 /*   By: jcueille <jcueille@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/01 20:28:25 by jcueille          #+#    #+#             */
-/*   Updated: 2021/02/12 14:30:54 by jcueille         ###   ########.fr       */
+/*   Updated: 2021/03/24 16:53:58 by jcueille         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,6 @@ t_env *g_env;
 int		ft_pwd(void);
 void    ft_prompt();
 void    ft_env();
+void	ft_export(t_list *cmd);
 
 #endif

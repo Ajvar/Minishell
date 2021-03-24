@@ -1,0 +1,9 @@
+"name""name"=test -> namname=test
+name=test -> name=test
+VAR -> rien
+var= -> var=
+
+1 seqrch key
+2 search value
+3 search if var already exist and delete it
+4 set new var
